@@ -1,16 +1,18 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View} from 'react-native';
+import { StyleSheet, Text, View, TouchableHighlight } from 'react-native';
 
 export default class DriverRow extends Component
 {
   render()
   {
     return (
-      <View style={styles.mainContainer}>
-        <View style={styles.titleContainer}>
-          <Text>{this.props.title}</Text>
+      <TouchableHighlight onPress={this.props.onPress} underlayColor='lightgray'>
+        <View style={styles.mainContainer}>
+          <View style={styles.titleContainer}>
+            <Text>{this.props.title}</Text>
+          </View>
         </View>
-      </View>
+      </TouchableHighlight>
     );
   }
 }

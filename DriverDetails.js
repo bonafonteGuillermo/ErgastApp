@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Platform, StyleSheet, ScrollView, Text, View } from 'react-native'
+import { Platform, StyleSheet, ScrollView, Text, View, Button, Alert } from 'react-native'
 import ApiClient from './ApiClient';
 
 export default class DriverDetail extends Component{
@@ -17,6 +17,7 @@ export default class DriverDetail extends Component{
         this.driverId = params.driver.driverId;
         this.state = { driver: params.driver};
         this.apiClient = new ApiClient();
+        this.isFavDriver = this.isFavDriver()
     }
 
     componentWillMount() {
@@ -33,6 +34,7 @@ export default class DriverDetail extends Component{
         return (
             <ScrollView contentContainerStyle={styles.container}>
                 {this.renderHeader(driver)}
+                {this.renderFavButton()}
             </ScrollView>
         );
     }
@@ -45,6 +47,31 @@ export default class DriverDetail extends Component{
                 </View>
             </View>
         )      
+    }
+
+    renderFavButton(){
+      return (
+        <Button
+        title= {this.favButtonText()}
+        onPress={() => this.addDriverToFav()}
+      />
+      )
+    }
+
+    addDriverToFav(){
+      Alert.alert('Simple Button pressed')
+    }
+
+    isFavDriver() {
+      return true
+    }
+
+    favButtonText(){
+      if(this.isFavDriver){
+        return "Add to favourites"
+      }else{
+        return "Remove from favourites"
+      }
     }
 }
 

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Platform, StyleSheet, ScrollView, Text, View, Button, Alert } from 'react-native'
 import ApiClient from './ApiClient';
+import LocalStorageManager from './LocalStorageManager';
 
 export default class DriverDetail extends Component{
 
@@ -17,6 +18,7 @@ export default class DriverDetail extends Component{
         this.driverId = params.driver.driverId;
         this.state = { driver: params.driver};
         this.apiClient = new ApiClient();
+        this.localStorageManager = new LocalStorageManager();
         this.isFavDriver = this.isFavDriver()
     }
 
@@ -53,24 +55,29 @@ export default class DriverDetail extends Component{
       return (
         <Button
         title= {this.favButtonText()}
-        onPress={() => this.addDriverToFav()}
+        onPress={() => this.favButtonPressed()}
       />
       )
     }
 
-    addDriverToFav(){
-      Alert.alert('Simple Button pressed')
+    favButtonPressed(){
+      if(this.isFavDriver){
+        this.localStorageManager.removeDriverFromLocalStorage(this.state.driver.driverId);
+      }else{
+        this.localStorageManager.saveDriverInLocalStorage(this.state.driver.driverId);
+      }
     }
 
     isFavDriver() {
-      return true
+      //Todo this.localStorageManager.isDriverSavedLocalStorage(this.state.driver.driverId);
+      return false
     }
 
     favButtonText(){
       if(this.isFavDriver){
-        return "Add to favourites"
-      }else{
         return "Remove from favourites"
+      }else{
+        return "Add to favourites"
       }
     }
 }

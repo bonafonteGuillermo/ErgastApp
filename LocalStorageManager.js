@@ -8,7 +8,10 @@ export default class LocalStorageManager {
     }
 
     removeDriverFromLocalStorage = async (driverId) => {
-        const res = await AsyncStorage.getItem(driverId);
-        return res;
-      }
+        return await AsyncStorage.removeItem(driverId);
+    }
+
+    isDriverSavedLocalStorage = async (driverId) => {
+        return await AsyncStorage.getItem(driverId);
+    }
 }

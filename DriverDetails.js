@@ -16,18 +16,35 @@ export default class DriverDetail extends Component{
 
         params = props.navigation.state.params
         this.driverId = params.driver.driverId;
-        this.state = { driver: params.driver};
         this.apiClient = new ApiClient();
         this.localStorageManager = new LocalStorageManager();
-        this.isFavDriver = this.isFavDriver()
+        this.state = { 
+          driver: params.driver,
+          isFavDriver : false,
+          favButtonText : 'Add to favourites'
+        };
     }
 
     componentWillMount() {
-        this.apiClient.getDriverDetails(this.driverId)
-        .then((driver) => {
-            this.setState({ driver: driver });
-          })
-          .catch((error) => { console.error(error) });
+      this.localStorageManager.isDriverSavedLocalStorage(this.state.driver.driverId)
+      .then((res) => {
+        if(res != null){
+          console.log('----------->FAV')
+          this.setState({ favButtonText: 'Remove from favourites' });
+          this.setState({ isFavDriver: true })
+        }else{
+          console.log('----------->NO FAV')
+          this.setState({ favButtonText: 'Add to favourites' });
+          this.setState({ isFavDriver: false })
+        }
+      })
+      .catch((error) => { console.error(error) });
+
+      this.apiClient.getDriverDetails(this.driverId)
+      .then((driver) => {
+          this.setState({ driver: driver });
+        })
+        .catch((error) => { console.error(error) });
     }
 
     render() {
@@ -43,41 +60,32 @@ export default class DriverDetail extends Component{
 
     renderHeader(driver) {
         return (
-            <View style={styles.headerContainer}>
-                <View >
-                    <Text>{driver.familyName}</Text>
-                </View>
-            </View>
+          <View style={styles.headerContainer}>
+              <View >
+                  <Text>{driver.familyName}</Text>
+              </View>
+          </View>
         )      
     }
 
     renderFavButton(){
       return (
         <Button
-        title= {this.favButtonText()}
+        title= {this.state.favButtonText }
         onPress={() => this.favButtonPressed()}
       />
       )
     }
 
     favButtonPressed(){
-      if(this.isFavDriver){
+      if(this.state.isFavDriver){
         this.localStorageManager.removeDriverFromLocalStorage(this.state.driver.driverId);
+        this.setState({ favButtonText: 'Add to favourites' });
+        this.setState({ isFavDriver: false })
       }else{
         this.localStorageManager.saveDriverInLocalStorage(this.state.driver.driverId);
-      }
-    }
-
-    isFavDriver() {
-      //Todo this.localStorageManager.isDriverSavedLocalStorage(this.state.driver.driverId);
-      return false
-    }
-
-    favButtonText(){
-      if(this.isFavDriver){
-        return "Remove from favourites"
-      }else{
-        return "Add to favourites"
+        this.setState({ favButtonText: 'Remove from favourites' });
+        this.setState({ isFavDriver: true })
       }
     }
 }

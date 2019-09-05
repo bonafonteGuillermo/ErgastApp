@@ -3,56 +3,62 @@ import { Platform, StyleSheet, ScrollView, Text, View, Button, Alert } from 'rea
 import ApiClient from './ApiClient';
 import LocalStorageManager from './LocalStorageManager';
 
+const favButtonText = {
+  ADD: 'Add to favourites',
+  REMOVE: 'Remove from favourites'
+}
+
 export default class DriverDetail extends Component{
 
-    static navigationOptions = ({ navigation }) => {
-        params = navigation.state.params;
+  static navigationOptions = ({ navigation }) => {
+      params = navigation.state.params;
+      return { title: params.driver.familyName };
+  };
 
-        return { title: params.driver.familyName };
-    };
+  constructor(props) {
+      super(props)
 
-    constructor(props) {
-        super(props)
+      params = props.navigation.state.params
+      this.driverId = params.driver.driverId;
+      this.apiClient = new ApiClient();
+      this.localStorageManager = new LocalStorageManager();
+      this.state = { 
+        driver: params.driver,
+        isFavDriver : false,
+        favButtonText : favButtonText.ADD
+      };
+  }
 
-        params = props.navigation.state.params
-        this.driverId = params.driver.driverId;
-        this.apiClient = new ApiClient();
-        this.localStorageManager = new LocalStorageManager();
-        this.state = { 
-          driver: params.driver,
-          isFavDriver : false,
-          favButtonText : 'Add to favourites'
-        };
-    }
+  componentWillMount() {
+    this.fetchFavourites();
+    this.fetchDriverDetails();
+  }
 
-    componentWillMount() {
-      this.localStorageManager.isDriverSavedLocalStorage(this.state.driver.driverId)
+  fetchDriverDetails() {
+    this.apiClient.getDriverDetails(this.driverId)
+      .then((driver) => {
+        this.setState({ driver: driver });
+      })
+      .catch((error) => { console.error(error); });
+  }
+
+  fetchFavourites() {
+    this.localStorageManager.isDriverSavedLocalStorage(this.state.driver.driverId)
       .then((res) => {
-        if(res != null){
-          console.log('----------->FAV')
-          this.setState({ favButtonText: 'Remove from favourites' });
-          this.setState({ isFavDriver: true })
-        }else{
-          console.log('----------->NO FAV')
-          this.setState({ favButtonText: 'Add to favourites' });
-          this.setState({ isFavDriver: false })
+        if (res != null) {
+          this.updateStates(true);
+        }
+        else {
+          this.updateStates(false);
         }
       })
-      .catch((error) => { console.error(error) });
-
-      this.apiClient.getDriverDetails(this.driverId)
-      .then((driver) => {
-          this.setState({ driver: driver });
-        })
-        .catch((error) => { console.error(error) });
-    }
+      .catch((error) => { console.error(error); });
+  }
 
     render() {
-        driver = this.state.driver
-
         return (
             <ScrollView contentContainerStyle={styles.container}>
-                {this.renderHeader(driver)}
+                {this.renderHeader(this.state.driver)}
                 {this.renderFavButton()}
             </ScrollView>
         );
@@ -80,12 +86,20 @@ export default class DriverDetail extends Component{
     favButtonPressed(){
       if(this.state.isFavDriver){
         this.localStorageManager.removeDriverFromLocalStorage(this.state.driver.driverId);
-        this.setState({ favButtonText: 'Add to favourites' });
-        this.setState({ isFavDriver: false })
+        this.updateStates(false)
       }else{
         this.localStorageManager.saveDriverInLocalStorage(this.state.driver.driverId);
-        this.setState({ favButtonText: 'Remove from favourites' });
+        this.updateStates(true)
+      }
+    }
+
+    updateStates(isFavDriver){
+      if(isFavDriver){
+        this.setState({ favButtonText: favButtonText.REMOVE });
         this.setState({ isFavDriver: true })
+      }else{
+        this.setState({ favButtonText: favButtonText.ADD });
+        this.setState({ isFavDriver: false })
       }
     }
 }

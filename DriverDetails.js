@@ -45,6 +45,7 @@ export default class DriverDetail extends Component{
   fetchFavourites() {
     this.localStorageManager.isDriverSavedLocalStorage(this.state.driver.driverId)
       .then((res) => {
+        console.log('isDriverSavedLocalStorage '+res)
         if (res != null) {
           this.updateStates(true);
         }
@@ -85,10 +86,12 @@ export default class DriverDetail extends Component{
 
     favButtonPressed(){
       if(this.state.isFavDriver){
-        this.localStorageManager.removeDriverFromLocalStorage(this.state.driver.driverId);
+        const res = this.localStorageManager.removeDriverFromLocalStorage(this.state.driver.driverId);
+        console.log('removeDriverFromLocalStorage '+res)
         this.updateStates(false)
       }else{
-        this.localStorageManager.saveDriverInLocalStorage(this.state.driver.driverId);
+        const res = this.localStorageManager.saveDriverInLocalStorage(this.state.driver.driverId);
+        console.log('saveDriverInLocalStorage '+res)
         this.updateStates(true)
       }
     }

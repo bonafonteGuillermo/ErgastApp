@@ -4,7 +4,8 @@ import {
   StyleSheet,
   FlatList,
   Text,
-  View
+  Image,
+  View,TouchableHighlight
 } from 'react-native';
 
 import DriverRow from './DriverRow'
@@ -14,6 +15,14 @@ export default class DriverList extends Component{
 
     static navigationOptions = {
         title: 'F1 Standings',
+        headerRight: (
+            <TouchableHighlight onPress={this._onFilterPress}>
+                <Image
+                source={require('./assets/calendar.png')}
+                />
+          </TouchableHighlight>
+        )
+
     };
 
     constructor(props) {
@@ -21,7 +30,6 @@ export default class DriverList extends Component{
     
         this.state = { drivers: [] };
         this.apiClient = new ApiClient();
-        // this.loading = false;
     }
     
     componentWillMount() {
@@ -29,12 +37,9 @@ export default class DriverList extends Component{
     }
     
     loadContent = async () => {
-    // if (this.loading){ return;}
-    // this.loading = true;
-
-    console.debug("Antes");
-    const drivers = await this.apiClient.getDriverStandings(2018)
-    this.setState({ drivers });
+        console.debug("Antes");
+        const drivers = await this.apiClient.getDriverStandings(2018)
+        this.setState({ drivers });
     }
     
     render() {

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { StyleSheet, ScrollView, Text, View, Image, Button, TouchableHighlight } from 'react-native'
+import WebView from 'react-native-webview'
 import ApiClient from './ApiClient';
 import LocalStorageManager from './LocalStorageManager';
 
@@ -51,7 +52,6 @@ export default class DriverDetail extends Component{
   fetchFavourites() {
     this.localStorageManager.isDriverSavedLocalStorage(this.state.driver.driverId)
       .then((res) => {
-        console.log('isDriverSavedLocalStorage '+res)
         if (res != null) {
           this.updateStates(true);
         }
@@ -65,20 +65,38 @@ export default class DriverDetail extends Component{
     render() {
         return (
             <ScrollView contentContainerStyle={styles.container}>
-                {this.renderHeader(this.state.driver)}
+                {this.renderContent(this.state.driver)}
+                {this.renderWebView(this.state.driver.url)}
                 {this.renderFavButton()}
             </ScrollView>
         );
     }
 
-    renderHeader(driver) {
+    renderContent(driver) {
         return (
-          <View style={styles.headerContainer}>
-              <View >
-                  <Text>{driver.familyName}</Text>
-              </View>
+          <View style={styles.mainContainer}>
+            {this.renderItem("Name",driver.givenName + " " + driver.familyName)}
+            {this.renderItem("Number", driver.permanentNumber)}
+            {this.renderItem("Date of birth", driver.dateOfBirth)}
           </View>
-        )      
+        );      
+    }
+
+    renderItem(title, value) {
+      return (
+        <View>
+          <Text>{title}</Text>
+          <Text>{value}</Text>
+        </View>
+      );
+    }
+
+    renderWebView(url) {
+      return (
+        <WebView
+        source={{uri: url}}
+      />
+      )
     }
 
     renderFavButton(){
@@ -114,42 +132,40 @@ export default class DriverDetail extends Component{
 }
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      padding: 10,
-      justifyContent: 'flex-start',
-      alignItems: 'stretch',
-    },
-    headerContainer: {
-      flex: 0,
-      justifyContent: 'center',
-      flexDirection: 'row',
-      marginBottom: 5,
-    },
-    item: {
-      marginVertical: 5,
-    },
-    dataContainer: {
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-    },
-    dataTitle: {
-      fontWeight: 'bold',
-    },
-    genre: {
-      paddingHorizontal: 2,
-      marginHorizontal: 2,
-      marginVertical: 1,
-      backgroundColor: 'lightgray'
-    },
-    titleContainer: {
-      flex: 1,
-      marginLeft: 10,
-      justifyContent: 'center',
-    },
-    image: {
-      width: 100,
-      height: 150,
-    }
-  
-  });
+  container: {
+    flex: 1,
+    padding: 10,
+    justifyContent: "flex-start",
+    alignItems: "stretch"
+  },
+  mainContainer: {
+    flex: 0,
+    justifyContent: "center",
+    marginBottom: 5
+  },
+  item: {
+    marginVertical: 5
+  },
+  dataContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap"
+  },
+  dataTitle: {
+    fontWeight: "bold"
+  },
+  genre: {
+    paddingHorizontal: 2,
+    marginHorizontal: 2,
+    marginVertical: 1,
+    backgroundColor: "lightgray"
+  },
+  titleContainer: {
+    flex: 1,
+    marginLeft: 10,
+    justifyContent: "center"
+  },
+  image: {
+    width: 100,
+    height: 150
+  }
+});

@@ -6,10 +6,16 @@ export default class DriverRow extends Component
   render()
   {
     return (
-      <TouchableHighlight onPress={this.props.onPress} underlayColor='lightgray'>
+      <TouchableHighlight
+        onPress={this.props.onPress}
+        underlayColor="lightgray"
+      >
         <View style={styles.mainContainer}>
           <View style={styles.titleContainer}>
             <Text>{this.props.title}</Text>
+          </View>
+          <View style={styles.pointsContainer}>
+            <Text style={styles.pointsText}>{this.props.points}</Text>
           </View>
         </View>
       </TouchableHighlight>
@@ -20,12 +26,21 @@ export default class DriverRow extends Component
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
-    flexDirection: 'row',
-    padding: 10,
+    flexDirection: "row",
+    paddingStart: 20,
+    paddingEnd: 20,
+    paddingTop: 10,
+    paddingBottom: 10
   },
   titleContainer: {
+    flex: 5,
+    justifyContent: "center"
+  },
+  pointsContainer: {
     flex: 1,
-    marginLeft: 10,
-    justifyContent: 'center',
+    justifyContent: "center"
+  },
+  pointsText: {
+    textAlign: "right"
   }
 });

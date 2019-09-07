@@ -4,12 +4,15 @@ import {
   StyleSheet,
   FlatList,
   Text,
+  Modal,
   Image,
+  Alert,
   ListHeaderComponent,
   View,
   TouchableHighlight
 } from 'react-native';
 
+import { DialogComponent, SlideAnimation } from "react-native-dialog-component";
 import DriverRow from './DriverRow'
 import ApiClient from './ApiClient'
 
@@ -19,54 +22,52 @@ export default class DriverList extends Component{
         title: 'F1 Standings App',
         headerTintColor: 'white',
         headerStyle: {
-            backgroundColor: '#a37d00'
-        },
-        headerRight: (
-            <TouchableHighlight onPress={this._onFilterPress}>
+            backgroundColor: "#a37d00"
+          },
+          headerRight: (
+            <TouchableHighlight>
                 <Image
                     style={{width: 24, height: 24, marginEnd: 10}}
                     source={require('./assets/calendar.png')}
                 />
             </TouchableHighlight>
-        )
+          )
     };
-
+    
     constructor(props) {
         super(props);
-    
-        this.state = { 
-            drivers: [],
-        };
         this.apiClient = new ApiClient();
+        this.state = { drivers: [] };
     }
-    
+
     componentWillMount() {
-    this.loadContent()
+        this.loadContent()
     }
-    
+
     loadContent = async () => {
         const drivers = await this.apiClient.getDriverStandings(2018)
-        this.setState({ drivers });
+        this.setState({ drivers : drivers });
     }
-    
+
     render() {
     return (
-        <View style={styles.container}>
-            
-
-            <FlatList 
-                data={this.state.drivers}
-                renderItem={({item}) => {
-                return (
-                    <DriverRow 
-                    title={item.Driver.familyName}
-                    onPress={this.onDriverPressed.bind(this, item.Driver)}
-                    />
-                )}}
-                keyExtractor={item => item.Driver.familyName}
-                ItemSeparatorComponent={this.renderSeparator}
-            />
-        </View>
+      <View style={styles.container}>
+        
+        <FlatList
+          data={this.state.drivers}
+          renderItem={({ item }) => {
+            return (
+              <DriverRow
+                title={item.Driver.familyName}
+                points={item.points}
+                onPress={this.onDriverPressed.bind(this, item.Driver)}
+              />
+            );
+          }}
+          keyExtractor={item => item.Driver.familyName}
+          ItemSeparatorComponent={this.renderSeparator}
+        />
+      </View>
     );
     }
 
@@ -90,13 +91,10 @@ export default class DriverList extends Component{
 }
     
 const styles = StyleSheet.create({
-    container: {
+  container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'stretch',
     backgroundColor: '#F5FCFF',
     },
-    filterIcon: {
-        
-    }
 });

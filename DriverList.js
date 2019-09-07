@@ -10,19 +10,24 @@ import {
 
 import DriverRow from './DriverRow'
 import ApiClient from './ApiClient'
+import symbolicateStackTrace from 'react-native/Libraries/Core/Devtools/symbolicateStackTrace';
 
 export default class DriverList extends Component{
 
     static navigationOptions = {
         title: 'F1 Standings',
+        headerTintColor: 'white',
+        headerStyle: {
+            backgroundColor: '#a37d00'
+        },
         headerRight: (
             <TouchableHighlight onPress={this._onFilterPress}>
                 <Image
-                source={require('./assets/calendar.png')}
+                    style={{width: 24, height: 24, marginEnd: 10}}
+                    source={require('./assets/calendar.png')}
                 />
-          </TouchableHighlight>
+            </TouchableHighlight>
         )
-
     };
 
     constructor(props) {
@@ -71,5 +76,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'stretch',
     backgroundColor: '#F5FCFF',
+    },
+    filterIcon: {
+        
     }
 });

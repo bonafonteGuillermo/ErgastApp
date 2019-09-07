@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Platform, StyleSheet, ScrollView, Text, View, Button, Alert } from 'react-native'
+import { StyleSheet, ScrollView, Text, View, Image, Button, TouchableHighlight } from 'react-native'
 import ApiClient from './ApiClient';
 import LocalStorageManager from './LocalStorageManager';
 
@@ -12,7 +12,13 @@ export default class DriverDetail extends Component{
 
   static navigationOptions = ({ navigation }) => {
       params = navigation.state.params;
-      return { title: params.driver.familyName };
+      return { 
+        title: params.driver.familyName,
+        headerTintColor: 'white',
+        headerStyle: {
+            backgroundColor: '#a37d00'
+        }
+      };
   };
 
   constructor(props) {

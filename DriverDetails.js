@@ -4,36 +4,50 @@ import WebView from 'react-native-webview'
 import ApiClient from './ApiClient';
 import LocalStorageManager from './LocalStorageManager';
 
-const favButtonText = {
-  ADD: 'Add to favourites',
-  REMOVE: 'Remove from favourites'
+const favButtonResource = {
+  FAVOURITE: require('./assets/fav.png'),
+  NO_FAVOURITE: require('./assets/no_fav.png')
 }
 
 export default class DriverDetail extends Component{
+
+  constructor(props) {
+    super(props)
+
+    params = props.navigation.state.params
+    
+    this.driverId = params.driver.driverId;
+    this.apiClient = new ApiClient();
+    this.localStorageManager = new LocalStorageManager();
+    this.state = { 
+      driver: params.driver,
+      isFavDriver : false
+    };
+  }
 
   static navigationOptions = ({ navigation }) => {
       params = navigation.state.params;
       return { 
         title: params.driver.familyName,
         headerTintColor: 'white',
-        headerStyle: {
-            backgroundColor: '#a37d00'
-        }
+        headerStyle: { backgroundColor: '#a37d00' },
+        headerRight: (
+          <TouchableHighlight
+              onPress={navigation.getParam('favButtonPressed')}>
+              <Image
+                  style={{width: 24, height: 24, marginEnd: 10}}
+                  source={navigation.getParam('getFavButtonResource')}
+              />
+          </TouchableHighlight>
+        )
       };
   };
 
-  constructor(props) {
-      super(props)
-
-      params = props.navigation.state.params
-      this.driverId = params.driver.driverId;
-      this.apiClient = new ApiClient();
-      this.localStorageManager = new LocalStorageManager();
-      this.state = { 
-        driver: params.driver,
-        isFavDriver : false,
-        favButtonText : favButtonText.ADD
-      };
+  componentDidMount(){
+    this.props.navigation.setParams({ 
+      favButtonPressed: this._favButtonPressed,
+      getFavButtonResource: favButtonResource.NO_FAVOURITE
+    })
   }
 
   componentWillMount() {
@@ -67,7 +81,6 @@ export default class DriverDetail extends Component{
             <ScrollView contentContainerStyle={styles.container}>
                 {this.renderContent(this.state.driver)}
                 {this.renderWebView(this.state.driver.url)}
-                {this.renderFavButton()}
             </ScrollView>
         );
     }
@@ -99,16 +112,7 @@ export default class DriverDetail extends Component{
       )
     }
 
-    renderFavButton(){
-      return (
-        <Button
-        title= {this.state.favButtonText }
-        onPress={() => this.favButtonPressed()}
-      />
-      )
-    }
-
-    favButtonPressed(){
+    _favButtonPressed = () => {
       if(this.state.isFavDriver){
         const res = this.localStorageManager.removeDriverFromLocalStorage(this.state.driver.driverId);
         console.log('removeDriverFromLocalStorage '+res)
@@ -122,11 +126,11 @@ export default class DriverDetail extends Component{
 
     updateStates(isFavDriver){
       if(isFavDriver){
-        this.setState({ favButtonText: favButtonText.REMOVE });
         this.setState({ isFavDriver: true })
+        this.props.navigation.setParams({ getFavButtonResource: favButtonResource.FAVOURITE })
       }else{
-        this.setState({ favButtonText: favButtonText.ADD });
         this.setState({ isFavDriver: false })
+        this.props.navigation.setParams({ getFavButtonResource: favButtonResource.NO_FAVOURITE })
       }
     }
 }

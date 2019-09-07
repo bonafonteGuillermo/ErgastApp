@@ -5,17 +5,18 @@ import {
   FlatList,
   Text,
   Image,
-  View,TouchableHighlight
+  ListHeaderComponent,
+  View,
+  TouchableHighlight
 } from 'react-native';
 
 import DriverRow from './DriverRow'
 import ApiClient from './ApiClient'
-import symbolicateStackTrace from 'react-native/Libraries/Core/Devtools/symbolicateStackTrace';
 
 export default class DriverList extends Component{
 
     static navigationOptions = {
-        title: 'F1 Standings',
+        title: 'F1 Standings App',
         headerTintColor: 'white',
         headerStyle: {
             backgroundColor: '#a37d00'
@@ -33,7 +34,9 @@ export default class DriverList extends Component{
     constructor(props) {
         super(props);
     
-        this.state = { drivers: [] };
+        this.state = { 
+            drivers: [],
+        };
         this.apiClient = new ApiClient();
     }
     
@@ -42,7 +45,6 @@ export default class DriverList extends Component{
     }
     
     loadContent = async () => {
-        console.debug("Antes");
         const drivers = await this.apiClient.getDriverStandings(2018)
         this.setState({ drivers });
     }
@@ -50,6 +52,8 @@ export default class DriverList extends Component{
     render() {
     return (
         <View style={styles.container}>
+            
+
             <FlatList 
                 data={this.state.drivers}
                 renderItem={({item}) => {
@@ -58,12 +62,27 @@ export default class DriverList extends Component{
                     title={item.Driver.familyName}
                     onPress={this.onDriverPressed.bind(this, item.Driver)}
                     />
-                )
-                }}>
-            </FlatList>
+                )}}
+                keyExtractor={item => item.Driver.familyName}
+                ItemSeparatorComponent={this.renderSeparator}
+            />
         </View>
     );
     }
+
+    renderSeparator = () => {
+        return (
+          <View
+            style={{
+              height: 1,
+              width: "92%",
+              backgroundColor: "#CED0CE",
+              marginLeft: "4%",
+              marginRight: "4%",
+            }}
+          />
+        );
+      };
     
     onDriverPressed(driver){
         this.props.navigation.navigate('driverDetails', { driver: driver });

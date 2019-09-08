@@ -14,66 +14,73 @@ import ApiClient from './ApiClient'
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 
 export default class DriverList extends Component {
-                 constructor(props) {
-                   super(props);
+  constructor(props) {
+    super(props);
 
-                   this.apiClient = new ApiClient();
-                   this.state = {
-                     drivers: [],
-                     showActivityIndicator: false,
-                     selectedYear: 2019
-                   };
-                 }
+    this.apiClient = new ApiClient();
+    this.state = {
+      drivers: [],
+      showActivityIndicator: false,
+      selectedYear: 2019,
+      disableDecrementYear: false,
+      disableIncrementYear: false
+    };
+  }
 
-                 static navigationOptions = ({ navigation }) => {
-                   params = navigation.state.params;
-                   return {
-                     title: "F1 Standings App",
-                     headerTintColor: "white",
-                     headerStyle: { backgroundColor: "#a37d00" }
-                   };
-                 };
+  static navigationOptions = ({ navigation }) => {
+    params = navigation.state.params;
+    return {
+      title: "F1 Standings App",
+      headerTintColor: "white",
+      headerStyle: { backgroundColor: "#a37d00" }
+    };
+  };
 
-                 componentWillMount() {
-                   this.loadContent();
-                 }
+  componentWillMount() {
+    this.loadContent();
+  }
 
-                 loadContent = async () => {
-                   this.setState({ showActivityIndicator: true })
-                   const drivers = await this.apiClient.getDriverStandings(this.state.selectedYear);
-                   this.setState({ 
-                     drivers: drivers,
-                     showActivityIndicator: false 
-                    });
-                 };
+  loadContent = async () => {
+    this.setState({ showActivityIndicator: true })
+    const drivers = await this.apiClient.getDriverStandings(this.state.selectedYear);
+    this.setState({ 
+      drivers: drivers,
+      showActivityIndicator: false 
+    });
+  };
 
-                 render() {
-                   if (this.state.showActivityIndicator) {
-                     return (
-                       <View style={styles.container}>
-                         <ActivityIndicator
-                           animating={this.state.showActivityIndicator}
-                           color='#a37d00'
-                           size="large"
-                           style={styles.activityIndicator} />
-                       </View>
-                     )
-                   }
-                   return (
-                     <View style={styles.container}>
-                       {this.renderYearSelector()}
-                       {this.renderTopTableDecorator()}
-                       {this.renderFlatList()}
-                       
-                     </View>
-                
-                   );
-                 }
+  render() {
+    if (this.state.showActivityIndicator) {
+      return (
+        <View style={styles.container}>
+          <ActivityIndicator
+            animating={this.state.showActivityIndicator}
+            color='#a37d00'
+            size="large"
+            style={styles.activityIndicator} />
+        </View>
+      )
+    }
+    return (
+      <View style={styles.container}>
+        {this.renderYearSelector()}
+        {this.renderTopTableDecorator()}
+        {this.renderFlatList()}
+        
+      </View>
+
+    );
+  }
 
   renderYearSelector = () => {
     return (
+
       <View style={styles.yearSelectorContainer}>
-        <TouchableWithoutFeedback style={styles.yearSelectorIconContainer}>
+        <TouchableWithoutFeedback
+          disabled={this.state.disableDecrementYear}
+          style={styles.yearSelectorIconContainer}
+          onPress={() => { this.decrementYear(this.state.selectedYear) }}
+        >
           <Image
             style={{ width: 16, height: 16}}
             source={require('./assets/left_arrow.png')}
@@ -87,7 +94,11 @@ export default class DriverList extends Component {
           <Text style={styles.yearSelectorValueText}>{this.state.selectedYear}</Text>
         </View> 
         
-        <TouchableWithoutFeedback style={styles.yearSelectorIconContainer}>
+        <TouchableWithoutFeedback
+          disabled={this.state.disableIncrementYear}
+          style={styles.yearSelectorIconContainer}
+          onPress={() => { this.incrementYear(this.state.selectedYear) }}
+        >
           <Image
             style={{ width: 16, height: 16 }}
             source={require('./assets/right_arrow.png')}
@@ -98,42 +109,60 @@ export default class DriverList extends Component {
     );
   }
 
-                renderTopTableDecorator = () => {
-                  return (
-                  
-                    <View
-                      style={{
-                        height: 5,
-                        width: "100%",
-                        backgroundColor: "#a37d00",
-                      }}
-                    />
-                  )
-                }
+  decrementYear(year) {
+    if (year === 1950) {
+      this.setState({ disableDecrementYear: true })
+    } else {
+      this.setState({ disableIncrementYear: false })
+      this.setState({ selectedYear: year - 1 })
+    }
+  }
 
-                 renderFlatlistStickyHeader = () => {
-                   var stickyHeaderView = (
-                     <View style={styles.header_style}>
-                       <DriverRowHeader/>
-                     </View>
-                   );
+  incrementYear(year) {
+    if (year === 2019){
+      this.setState({disableIncrementYear: true})
+    }else{
+      this.setState({ disableDecrementYear: false })
+      this.setState({ selectedYear: year + 1 })
+    }
+  }
 
-                   return stickyHeaderView;
-                 };
+  renderTopTableDecorator = () => {
+  return (
 
-                 renderSeparator = () => {
-                   return (
-                     <View
-                       style={{
-                         height: 1,
-                         width: "92%",
-                         backgroundColor: "#CED0CE",
-                         marginLeft: "4%",
-                         marginRight: "4%"
-                       }}
-                     />
-                   );
-                 };
+    <View
+      style={{
+        height: 5,
+        width: "100%",
+        backgroundColor: "#a37d00",
+      }}
+    />
+  )
+  }
+
+  renderFlatlistStickyHeader = () => {
+    var stickyHeaderView = (
+      <View style={styles.header_style}>
+        <DriverRowHeader/>
+      </View>
+    );
+
+    return stickyHeaderView;
+  };
+
+  renderSeparator = () => {
+    return (
+      <View
+        style={{
+          height: 1,
+          width: "92%",
+          backgroundColor: "#CED0CE",
+          marginLeft: "4%",
+          marginRight: "4%"
+        }}
+      />
+    );
+  };
 
   renderFlatList() {
     return <FlatList data={this.state.drivers} ListHeaderComponent={this.renderFlatlistStickyHeader} stickyHeaderIndices={[0]} renderItem={({ item }) => {
@@ -141,12 +170,12 @@ export default class DriverList extends Component {
     } } keyExtractor={item => item.Driver.familyName} ItemSeparatorComponent={this.renderSeparator} />;
   }
 
-                 onDriverPressed(driver) {
-                   this.props.navigation.navigate("driverDetails", {
-                     driver: driver
-                   });
-                 }
-               }
+  onDriverPressed(driver) {
+    this.props.navigation.navigate("driverDetails", {
+      driver: driver
+    });
+  }
+}
     
 const styles = StyleSheet.create({
     container: {

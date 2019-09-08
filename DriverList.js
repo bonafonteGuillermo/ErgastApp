@@ -66,9 +66,7 @@ export default class DriverList extends Component {
         {this.renderYearSelector()}
         {this.renderTopTableDecorator()}
         {this.renderFlatList()}
-        
       </View>
-
     );
   }
 
@@ -115,6 +113,7 @@ export default class DriverList extends Component {
     } else {
       this.setState({ disableIncrementYear: false })
       this.setState({ selectedYear: year - 1 })
+      this.loadContent()
     }
   }
 
@@ -124,12 +123,12 @@ export default class DriverList extends Component {
     }else{
       this.setState({ disableDecrementYear: false })
       this.setState({ selectedYear: year + 1 })
+      this.loadContent()
     }
   }
 
   renderTopTableDecorator = () => {
   return (
-
     <View
       style={{
         height: 5,
@@ -146,28 +145,27 @@ export default class DriverList extends Component {
         <DriverRowHeader/>
       </View>
     );
-
     return stickyHeaderView;
   };
 
-  renderSeparator = () => {
-    return (
-      <View
-        style={{
-          height: 1,
-          width: "92%",
-          backgroundColor: "#CED0CE",
-          marginLeft: "4%",
-          marginRight: "4%"
-        }}
-      />
-    );
-  };
+  renderSeparator = () => { return ( <View style={styles.separator}/> )};
 
   renderFlatList() {
-    return <FlatList data={this.state.drivers} ListHeaderComponent={this.renderFlatlistStickyHeader} stickyHeaderIndices={[0]} renderItem={({ item }) => {
-      return (<DriverRow title={item.Driver.familyName} points={item.points} onPress={this.onDriverPressed.bind(this, item.Driver)} />);
-    } } keyExtractor={item => item.Driver.familyName} ItemSeparatorComponent={this.renderSeparator} />;
+    return <FlatList 
+      data={this.state.drivers} 
+      ListHeaderComponent={this.renderFlatlistStickyHeader} 
+      keyExtractor={item => item.Driver.familyName}
+      ItemSeparatorComponent={this.renderSeparator} 
+      stickyHeaderIndices={[0]} 
+      renderItem={({ item }) => {
+        return (
+          <DriverRow 
+            title={item.Driver.familyName} 
+            points={item.points} 
+            onPress={this.onDriverPressed.bind(this, item.Driver)} />
+        );
+      }} 
+    />;
   }
 
   onDriverPressed(driver) {
@@ -178,23 +176,23 @@ export default class DriverList extends Component {
 }
     
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'stretch',
-        backgroundColor: '#F5FCFF',
-        marginTop: 20
-    },
-    picker: {
-        height: 50, 
-        width: 50
-    },
-    yearSelectorContainer: {
-      backgroundColor: 'white',
-      flexDirection: "row",
-      justifyContent: 'flex-end',
-      
-    },
+  container: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'stretch',
+      backgroundColor: '#F5FCFF',
+      marginTop: 20
+  },
+  picker: {
+      height: 50, 
+      width: 50
+  },
+  yearSelectorContainer: {
+    backgroundColor: 'white',
+    flexDirection: "row",
+    justifyContent: 'flex-start',
+    
+  },
   yearSelectorValue: {
     flexDirection: "row",
     backgroundColor: '#a37d00',
@@ -212,5 +210,12 @@ const styles = StyleSheet.create({
   yearSelectorIconContainer: {
     padding: 6,
     backgroundColor: '#D9D9D9'
+  },
+  separator: {
+    height: 1,
+    width: "92%",
+    backgroundColor: "#CED0CE",
+    marginLeft: "4%",
+    marginRight: "4%"
   }
 });

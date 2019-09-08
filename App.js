@@ -1,7 +1,4 @@
 import React, { Component } from 'react';
-import { FlatList, Platform, StyleSheet, Text, View } from 'react-native';
-import ApiClient from './ApiClient'
-import DriverRow from './DriverRow'
 import DriverList from './DriverList'
 import DriverDetails from './DriverDetails'
 import { createStackNavigator } from 'react-navigation-stack'

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, ScrollView, Text, View, Image, Button, TouchableHighlight } from 'react-native'
+import { StyleSheet, ScrollView, Text, View, Image, Button, TouchableWithoutFeedback } from 'react-native'
 import WebView from 'react-native-webview'
 import ApiClient from './ApiClient';
 import LocalStorageManager from './LocalStorageManager';
@@ -9,13 +9,12 @@ const favButtonResource = {
   NO_FAVOURITE: require('./assets/no_fav.png')
 }
 
-export default class DriverDetail extends Component{
+export default class DriverDetail extends Component {
 
   constructor(props) {
     super(props)
 
     params = props.navigation.state.params
-    
     this.driverId = params.driver.driverId;
     this.apiClient = new ApiClient();
     this.localStorageManager = new LocalStorageManager();
@@ -32,27 +31,26 @@ export default class DriverDetail extends Component{
         headerTintColor: 'white',
         headerStyle: { backgroundColor: '#a37d00' },
         headerRight: (
-          <TouchableHighlight
-              onPress={navigation.getParam('favButtonPressed')}>
+          <TouchableWithoutFeedback onPress = { navigation.getParam('favButtonPressed')}>
               <Image
                   style={{width: 24, height: 24, marginEnd: 10}}
                   source={navigation.getParam('getFavButtonResource')}
               />
-          </TouchableHighlight>
+          </TouchableWithoutFeedback>
         )
       };
   };
 
-  componentDidMount(){
-    this.props.navigation.setParams({ 
-      favButtonPressed: this._favButtonPressed,
-      getFavButtonResource: favButtonResource.NO_FAVOURITE
-    })
-  }
-
   componentWillMount() {
     this.fetchFavourites();
     this.fetchDriverDetails();
+  }
+
+  componentDidMount(){
+    this.props.navigation.setParams({ 
+      favButtonPressed: this._favButtonPressed,
+       getFavButtonResource: favButtonResource.NO_FAVOURITE
+    })
   }
 
   fetchDriverDetails() {
@@ -129,6 +127,7 @@ export default class DriverDetail extends Component{
         this.setState({ isFavDriver: true })
         this.props.navigation.setParams({ getFavButtonResource: favButtonResource.FAVOURITE })
       }else{
+
         this.setState({ isFavDriver: false })
         this.props.navigation.setParams({ getFavButtonResource: favButtonResource.NO_FAVOURITE })
       }

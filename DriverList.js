@@ -3,13 +3,15 @@ import {
   StyleSheet,
   FlatList,
   ActivityIndicator,
-  Dimensions,
+  Image,
+  Text,
   View,
 } from 'react-native';
 
 import DriverRow from './DriverRow'
 import DriverRowHeader from "./DriverRowHeader";
 import ApiClient from './ApiClient'
+import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 
 export default class DriverList extends Component {
                  constructor(props) {
@@ -18,7 +20,8 @@ export default class DriverList extends Component {
                    this.apiClient = new ApiClient();
                    this.state = {
                      drivers: [],
-                     showActivityIndicator: false
+                     showActivityIndicator: false,
+                     selectedYear: 2019
                    };
                  }
 
@@ -37,9 +40,7 @@ export default class DriverList extends Component {
 
                  loadContent = async () => {
                    this.setState({ showActivityIndicator: true })
-                   const drivers = await this.apiClient.getDriverStandings(
-                     2019
-                   );
+                   const drivers = await this.apiClient.getDriverStandings(this.state.selectedYear);
                    this.setState({ 
                      drivers: drivers,
                      showActivityIndicator: false 
@@ -60,32 +61,55 @@ export default class DriverList extends Component {
                    }
                    return (
                      <View style={styles.container}>
-                       <FlatList
-                         data={this.state.drivers}
-                         ListHeaderComponent={
-                           this.renderFlatlistStickyHeader
-                         }
-                         stickyHeaderIndices={[0]}
-                         renderItem={({ item }) => {
-                           return (
-                             <DriverRow
-                               title={item.Driver.familyName}
-                               points={item.points}
-                               onPress={this.onDriverPressed.bind(
-                                 this,
-                                 item.Driver
-                               )}
-                             />
-                           );
-                         }}
-                         keyExtractor={item => item.Driver.familyName}
-                         ItemSeparatorComponent={this.renderSeparator}
-                       />
+                       {this.renderYearSelector()}
+                       {this.renderTopTableDecorator()}
+                       {this.renderFlatList()}
                        
                      </View>
                 
                    );
                  }
+
+  renderYearSelector = () => {
+    return (
+      <View style={styles.yearSelectorContainer}>
+        <TouchableWithoutFeedback style={styles.yearSelectorIconContainer}>
+          <Image
+            style={{ width: 16, height: 16}}
+            source={require('./assets/left_arrow.png')}
+          />
+        </TouchableWithoutFeedback>
+        <View style={styles.yearSelectorValue}>
+          <Image
+            style={styles.yearSelectorValueImage}
+            source={require('./assets/calendar.png')}
+          />
+          <Text style={styles.yearSelectorValueText}>{this.state.selectedYear}</Text>
+        </View> 
+        
+        <TouchableWithoutFeedback style={styles.yearSelectorIconContainer}>
+          <Image
+            style={{ width: 16, height: 16 }}
+            source={require('./assets/right_arrow.png')}
+          />
+        </TouchableWithoutFeedback>
+
+      </View>
+    );
+  }
+
+                renderTopTableDecorator = () => {
+                  return (
+                  
+                    <View
+                      style={{
+                        height: 5,
+                        width: "100%",
+                        backgroundColor: "#a37d00",
+                      }}
+                    />
+                  )
+                }
 
                  renderFlatlistStickyHeader = () => {
                    var stickyHeaderView = (
@@ -111,6 +135,12 @@ export default class DriverList extends Component {
                    );
                  };
 
+  renderFlatList() {
+    return <FlatList data={this.state.drivers} ListHeaderComponent={this.renderFlatlistStickyHeader} stickyHeaderIndices={[0]} renderItem={({ item }) => {
+      return (<DriverRow title={item.Driver.familyName} points={item.points} onPress={this.onDriverPressed.bind(this, item.Driver)} />);
+    } } keyExtractor={item => item.Driver.familyName} ItemSeparatorComponent={this.renderSeparator} />;
+  }
+
                  onDriverPressed(driver) {
                    this.props.navigation.navigate("driverDetails", {
                      driver: driver
@@ -124,9 +154,34 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'stretch',
         backgroundColor: '#F5FCFF',
+        marginTop: 20
     },
     picker: {
         height: 50, 
         width: 50
-    }
+    },
+    yearSelectorContainer: {
+      backgroundColor: 'white',
+      flexDirection: "row",
+      justifyContent: 'flex-end',
+      
+    },
+  yearSelectorValue: {
+    flexDirection: "row",
+    backgroundColor: '#a37d00',
+    padding: 6
+  },
+  yearSelectorValueImage: {
+    width: 16, 
+    height: 16,
+  },
+  yearSelectorValueText: {
+    marginStart: 8,
+    color: 'white',
+    fontWeight: 'bold'
+  },
+  yearSelectorIconContainer: {
+    padding: 6,
+    backgroundColor: '#D9D9D9'
+  }
 });

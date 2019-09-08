@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { StyleSheet, Text, View, TouchableHighlight } from 'react-native';
+import { bold } from 'ansi-colors';
 
 export default class DriverRowHeader extends Component
 {
@@ -8,7 +9,7 @@ export default class DriverRowHeader extends Component
     return (
       <View style={styles.mainContainer}>
           <View style={styles.titleContainer}>
-            <Text>Name</Text>
+          <Text style={styles.nameText}>Name</Text>
           </View>
           <View style={styles.pointsContainer}>
             <Text style={styles.pointsText}>Points</Text>
@@ -26,7 +27,7 @@ const styles = StyleSheet.create({
     paddingEnd: 20,
     paddingTop: 10,
     paddingBottom: 10,
-    backgroundColor: 'white'
+    backgroundColor: '#E9E9E9'
   },
   titleContainer: {
     flex: 5,
@@ -37,6 +38,12 @@ const styles = StyleSheet.create({
     justifyContent: "center"
   },
   pointsText: {
-    textAlign: "right"
+    textAlign: "right",
+    fontWeight: 'bold',
+    color: '#656565'
+  },
+  nameText: {
+    fontWeight: 'bold',
+    color: '#656565'
   }
 });

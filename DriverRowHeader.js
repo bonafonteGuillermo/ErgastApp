@@ -1,24 +1,19 @@
 import React, { Component } from 'react';
 import { StyleSheet, Text, View, TouchableHighlight } from 'react-native';
 
-export default class DriverRow extends Component
+export default class DriverRowHeader extends Component
 {
   render()
   {
     return (
-      <TouchableHighlight
-        onPress={this.props.onPress}
-        underlayColor="lightgray"
-      >
-        <View style={styles.mainContainer}>
+      <View style={styles.mainContainer}>
           <View style={styles.titleContainer}>
-            <Text>{this.props.title}</Text>
+            <Text>Name</Text>
           </View>
           <View style={styles.pointsContainer}>
-            <Text style={styles.pointsText}>{this.props.points}</Text>
+            <Text style={styles.pointsText}>Points</Text>
           </View>
         </View>
-      </TouchableHighlight>
     );
   }
 }
@@ -31,6 +26,7 @@ const styles = StyleSheet.create({
     paddingEnd: 20,
     paddingTop: 10,
     paddingBottom: 10,
+    backgroundColor: 'white'
   },
   titleContainer: {
     flex: 5,

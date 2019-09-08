@@ -2,13 +2,13 @@ import React, { Component } from 'react';
 import {
   StyleSheet,
   FlatList,
-  Image,
-  Picker,
+  ActivityIndicator,
+  Dimensions,
   View,
-  TouchableWithoutFeedback
 } from 'react-native';
 
 import DriverRow from './DriverRow'
+import DriverRowHeader from "./DriverRowHeader";
 import ApiClient from './ApiClient'
 
 export default class DriverList extends Component {
@@ -18,6 +18,7 @@ export default class DriverList extends Component {
                    this.apiClient = new ApiClient();
                    this.state = {
                      drivers: [],
+                     showActivityIndicator: false
                    };
                  }
 
@@ -26,7 +27,7 @@ export default class DriverList extends Component {
                    return {
                      title: "F1 Standings App",
                      headerTintColor: "white",
-                     headerStyle: { backgroundColor: "#a37d00" },
+                     headerStyle: { backgroundColor: "#a37d00" }
                    };
                  };
 
@@ -35,15 +36,36 @@ export default class DriverList extends Component {
                  }
 
                  loadContent = async () => {
-                   const drivers = await this.apiClient.getDriverStandings(2019);
-                   this.setState({ drivers: drivers });
+                   this.setState({ showActivityIndicator: true })
+                   const drivers = await this.apiClient.getDriverStandings(
+                     2019
+                   );
+                   this.setState({ 
+                     drivers: drivers,
+                     showActivityIndicator: false 
+                    });
                  };
 
                  render() {
+                   if (this.state.showActivityIndicator) {
+                     return (
+                       <View style={styles.container}>
+                         <ActivityIndicator
+                           animating={this.state.showActivityIndicator}
+                           color='#a37d00'
+                           size="large"
+                           style={styles.activityIndicator} />
+                       </View>
+                     )
+                   }
                    return (
                      <View style={styles.container}>
                        <FlatList
                          data={this.state.drivers}
+                         ListHeaderComponent={
+                           this.renderFlatlistStickyHeader
+                         }
+                         stickyHeaderIndices={[0]}
                          renderItem={({ item }) => {
                            return (
                              <DriverRow
@@ -59,9 +81,21 @@ export default class DriverList extends Component {
                          keyExtractor={item => item.Driver.familyName}
                          ItemSeparatorComponent={this.renderSeparator}
                        />
-                </View>
+                       
+                     </View>
+                
                    );
                  }
+
+                 renderFlatlistStickyHeader = () => {
+                   var stickyHeaderView = (
+                     <View style={styles.header_style}>
+                       <DriverRowHeader/>
+                     </View>
+                   );
+
+                   return stickyHeaderView;
+                 };
 
                  renderSeparator = () => {
                    return (

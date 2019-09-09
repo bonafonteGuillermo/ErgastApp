@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, ScrollView, Text, View, Image, Button, TouchableWithoutFeedback } from 'react-native'
+import { StyleSheet, ScrollView, Text, ActivityIndicator, Image, Button, TouchableWithoutFeedback } from 'react-native'
 import WebView from 'react-native-webview'
 import ApiClient from './ApiClient';
 import LocalStorageManager from './LocalStorageManager';
@@ -77,38 +77,32 @@ export default class DriverDetail extends Component {
     render() {
         return (
             <ScrollView contentContainerStyle={styles.container}>
-                {this.renderContent(this.state.driver)}
                 {this.renderWebView(this.state.driver.url)}
             </ScrollView>
         );
     }
-
-    renderContent(driver) {
-        return (
-          <View style={styles.mainContainer}>
-            {this.renderItem("Name",driver.givenName + " " + driver.familyName)}
-            {this.renderItem("Number", driver.permanentNumber)}
-            {this.renderItem("Date of birth", driver.dateOfBirth)}
-          </View>
-        );      
-    }
-
-    renderItem(title, value) {
-      return (
-        <View>
-          <Text>{title}</Text>
-          <Text>{value}</Text>
-        </View>
-      );
-    }
-
+   
     renderWebView(url) {
       return (
         <WebView
-        source={{uri: url}}
+          source={{uri: url}}
+          javaScriptEnabled={true}
+          domStorageEnabled={true}
+          startInLoadingState={true}
+          renderLoading={this.ActivityIndicatorLoadingView}
       />
       )
     }
+
+  ActivityIndicatorLoadingView() {
+    return (
+      <ActivityIndicator
+        color="#009688"
+        size="large"
+        style={styles.ActivityIndicatorStyle}
+      />
+    );
+  }
 
     _favButtonPressed = () => {
       if(this.state.isFavDriver){

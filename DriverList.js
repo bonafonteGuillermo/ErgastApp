@@ -196,7 +196,8 @@ const styles = StyleSheet.create({
   yearSelectorValue: {
     flexDirection: "row",
     backgroundColor: '#a37d00',
-    padding: 6
+    paddingTop: 8,
+    padding: 7
   },
   yearSelectorValueImage: {
     width: 16, 
@@ -208,7 +209,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold'
   },
   yearSelectorIconContainer: {
-    padding: 6,
+    padding: 8,
     backgroundColor: '#D9D9D9'
   },
   separator: {
